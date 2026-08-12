@@ -1,3 +1,26 @@
+// // prisma.config.ts
+
+// import "dotenv/config";
+// import { defineConfig, env } from "prisma/config";
+
+// export default defineConfig({
+//   schema: "prisma/schema.prisma",
+
+//   migrations: {
+//     path: "prisma/migrations",
+//   },
+
+//   engine: "classic",
+
+//   datasource: {
+//     url: env("DATABASE_URL"),
+//   },
+
+//   seed: "node prisma/seed.js", // 👈 IMPORTANT
+// });
+
+
+
 // prisma.config.ts
 
 import "dotenv/config";
@@ -15,6 +38,4 @@ export default defineConfig({
   datasource: {
     url: env("DATABASE_URL"),
   },
-
-  seed: "node prisma/seed.js", // 👈 IMPORTANT
 });
