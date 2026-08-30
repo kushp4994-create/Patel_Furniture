@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  password     String
+  role         Role     @default(USER)
+
+  // NEW FIELDS
+  phone        String?
+  address      String?
+  instagram    String?
+  facebook     String?
+  whatsapp     String?
+
+  createdAt    DateTime @default(now())
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String?
+  email     String
+  subject   String?
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Visitor {
+  id        Int      @id @default(autoincrement())
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Product {
+  id        String   @id @default(cuid())
+  name      String
+  price     Float
+  image     String
+  description String?
+  createdAt DateTime @default(now())
+  inquiries   Inquiry[]
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  productId String?
+  createdAt DateTime @default(now())
+
+  product   Product? @relation(fields: [productId], references: [id])
+}
+
+
+model Appointment {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  email     String?
+  message   String?
+  date      DateTime
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+}
