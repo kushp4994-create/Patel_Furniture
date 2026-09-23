@@ -32,7 +32,9 @@ const faqData: FAQ[] = [
   },
   {
     question: "WHAT LOFT REMODEL IN DOWNTOWN MIAMI?",
-    answer: "Stet clita kasd gubergren, no sea takimata sanctus est lorem ipsum dolor sit amet ipsum dolor sit amet, consetetur elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+    answer:
+      "Stet clita kasd gubergren, no sea takimata sanctus est lorem ipsum dolor sit amet ipsum dolor sit amet, consetetur elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+    category: "Office",
   },
   {
     question: "HAMBURGER SED BEEF RIBS BALL TIP SALAMI?",
@@ -146,7 +148,9 @@ function Accordion({
               id={`faq-answer-${id}`}
               role="region"
               aria-hidden={!isOpen}
-              className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+              className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isOpen
+                ? "grid-rows-[1fr]"
+                : "grid-rows-[0fr]"
                 }`}
             >
               <div className="min-h-0 overflow-hidden">
@@ -188,12 +192,19 @@ export default function FaqPage() {
     });
   }, [search, category]);
 
-  const leftFaqs = filteredFaqs.filter((_, index) => index % 2 === 0);
-  const rightFaqs = filteredFaqs.filter((_, index) => index % 2 !== 0);
+  const leftFaqs = filteredFaqs.filter(
+    (_, index) => index % 2 === 0
+  );
+
+  const rightFaqs = filteredFaqs.filter(
+    (_, index) => index % 2 !== 0
+  );
 
   const clearSearch = () => {
     setSearch("");
     setCategory("All");
+    setOpenLeft(null);
+    setOpenRight(null);
   };
 
   return (
@@ -204,12 +215,17 @@ export default function FaqPage() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('/images/about-banner.png')",
+            backgroundImage:
+              "url('/images/about-banner.png')",
           }}
+          aria-hidden="true"
         />
 
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black/60" />
+        <div
+          className="absolute inset-0 bg-black/60"
+          aria-hidden="true"
+        />
 
         {/* Content */}
         <div className="relative z-10 px-5 text-center text-white">
@@ -225,7 +241,9 @@ export default function FaqPage() {
 
           <p className="mt-5 text-[10px] uppercase tracking-[3px] text-white/80 sm:text-xs">
             HOME
-            <span className="mx-3 text-[#e0b15c]">/</span>
+            <span className="mx-3 text-[#e0b15c]">
+              /
+            </span>
             FAQ
           </p>
         </div>
@@ -234,7 +252,6 @@ export default function FaqPage() {
       {/* ================= FAQ CONTENT ================= */}
       <section className="bg-[#f5f5f5] py-16 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-[1300px] px-5 sm:px-8 lg:px-10">
-
           {/* INTRO */}
           <div className="mx-auto max-w-[720px] text-center">
             <p className="text-[10px] font-semibold uppercase tracking-[3px] text-[#5fb3a9] sm:text-xs">
@@ -248,9 +265,9 @@ export default function FaqPage() {
             <div className="mx-auto mt-5 h-[2px] w-12 bg-[#e0b15c]" />
 
             <p className="mt-5 text-sm leading-7 text-[#6b7280] sm:text-[15px]">
-              Find helpful answers about our furniture, office solutions,
-              remodeling services, delivery and other frequently asked
-              questions.
+              Find helpful answers about our furniture, office
+              solutions, remodeling services, delivery and other
+              frequently asked questions.
             </p>
           </div>
 
@@ -310,10 +327,12 @@ export default function FaqPage() {
           </div>
 
           {/* RESULT COUNT */}
-          <div className="mt-10 mb-5 flex items-center justify-between border-b border-[#dddddd] pb-4">
+          <div className="mb-5 mt-10 flex items-center justify-between border-b border-[#dddddd] pb-4">
             <p className="text-[10px] font-semibold uppercase tracking-[2px] text-[#6b7280]">
               {filteredFaqs.length}{" "}
-              {filteredFaqs.length === 1 ? "Question" : "Questions"}
+              {filteredFaqs.length === 1
+                ? "Question"
+                : "Questions"}
             </p>
 
             {(search || category !== "All") && (
@@ -327,7 +346,7 @@ export default function FaqPage() {
             )}
           </div>
 
-          {/* ================= FAQ GRID ================= */}
+          {/* FAQ GRID */}
           {filteredFaqs.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
               <Accordion
@@ -343,7 +362,7 @@ export default function FaqPage() {
               />
             </div>
           ) : (
-            /* ================= EMPTY STATE ================= */
+            /* EMPTY STATE */
             <div className="border border-[#dddddd] bg-white px-6 py-14 text-center sm:py-16">
               <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center border border-[#e0b15c]">
                 <svg
@@ -364,8 +383,8 @@ export default function FaqPage() {
               </h3>
 
               <p className="mx-auto mt-3 max-w-[450px] text-sm leading-6 text-[#6b7280]">
-                We could not find any questions matching your search. Try
-                another keyword or clear the filters.
+                We could not find any questions matching your
+                search. Try another keyword or clear the filters.
               </p>
 
               <button
@@ -392,8 +411,8 @@ export default function FaqPage() {
           </h2>
 
           <p className="mx-auto mt-5 max-w-[600px] text-sm leading-7 text-white/60 sm:text-[15px]">
-            Can&apos;t find the answer you&apos;re looking for? Get in touch
-            with our team and we&apos;ll be happy to help.
+            Can&apos;t find the answer you&apos;re looking for? Get in
+            touch with our team and we&apos;ll be happy to help.
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
@@ -416,4 +435,3 @@ export default function FaqPage() {
     </>
   );
 }
-

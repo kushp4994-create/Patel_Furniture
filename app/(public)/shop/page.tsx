@@ -1003,3 +1003,4 @@ export default async function ShopPage({
       </section>
     </main>
   );
+}
