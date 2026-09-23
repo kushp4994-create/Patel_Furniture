@@ -90,9 +90,8 @@ export default function Header() {
 
       {/* MAIN HEADER */}
       <header
-        className={`w-full bg-white shadow-sm transition-all duration-300 ${
-          isSticky ? "fixed top-0 left-0 z-50 shadow-md" : "relative"
-        }`}
+        className={`w-full bg-white shadow-sm transition-all duration-300 ${isSticky ? "fixed top-0 left-0 z-50 shadow-md" : "relative"
+          }`}
       >
         <div className="px-10 py-4 flex justify-center items-center gap-110">
 

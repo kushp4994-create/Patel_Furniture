@@ -47,12 +47,13 @@ enum Role {
 }
 
 model Product {
-  id        String   @id @default(cuid())
-  name      String
-  price     Float
-  image     String
+  id          String    @id @default(cuid())
+  name        String
+  price       Float
+  image       String
   description String?
-  createdAt DateTime @default(now())
+  category    String    @default("Other")
+  createdAt   DateTime  @default(now())
   inquiries   Inquiry[]
 }
 

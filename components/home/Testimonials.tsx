@@ -52,8 +52,8 @@ export default function Testimonials() {
   };
 
   return (
-        <section className="w-full bg-[#ffffff] py-[140px] text-center overflow-hidden">
-        <div className="max-w-[1400px] mx-auto px-10">
+    <section className="w-full bg-[#ffffff] py-[140px] text-center overflow-hidden">
+      <div className="max-w-[1400px] mx-auto px-10">
 
         <h2 className="text-[44px] font-semi text-gray-800 mb-4">
           Testimonials
@@ -74,11 +74,10 @@ export default function Testimonials() {
           {/* SLIDER */}
           <div className="overflow-hidden">
             <div
-              className={`flex ${
-                transition
-                  ? "transition-transform duration-700 ease-in-out"
-                  : ""
-              }`}
+              className={`flex ${transition
+                ? "transition-transform duration-700 ease-in-out"
+                : ""
+                }`}
               style={{
                 transform: `translateX(-${index * 100}%)`,
               }}
@@ -87,24 +86,24 @@ export default function Testimonials() {
                 <div key={i} className="min-w-full px-10">
 
                   {/* QUOTES */}
-                 <div className="relative mb-12">
+                  <div className="relative mb-12">
 
-  {/* LEFT QUOTE */}
-  <span className="absolute left-0 -top-28 text-[300px] text-[#5fb3a9]">
-    “
-  </span>
+                    {/* LEFT QUOTE */}
+                    <span className="absolute left-0 -top-28 text-[300px] text-[#5fb3a9]">
+                      “
+                    </span>
 
-  {/* RIGHT QUOTE */}
-  <span className="absolute right-0 -top-28 text-[300px] text-[#5fb3a9]">
-    ”
-  </span>
+                    {/* RIGHT QUOTE */}
+                    <span className="absolute right-0 -top-28 text-[300px] text-[#5fb3a9]">
+                      ”
+                    </span>
 
-  <p className="text-gray-600 italic text-xl leading-[36px] max-w-[900px] mx-auto">
-    {item.text}
-  </p>
+                    <p className="text-gray-600 italic text-xl leading-[36px] max-w-[900px] mx-auto">
+                      {item.text}
+                    </p>
 
-</div>
-                  
+                  </div>
+
 
                   <img
                     src={item.image}

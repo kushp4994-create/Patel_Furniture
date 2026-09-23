@@ -110,11 +110,11 @@ export default function AdminDashboard() {
   };
 
   const lineData = {
-    labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     datasets: [
       {
         label: "Weekly Visitors",
-        data: weeklyVisitors.length ? weeklyVisitors : [0,0,0,0,0,0,0],
+        data: weeklyVisitors.length ? weeklyVisitors : [0, 0, 0, 0, 0, 0, 0],
         borderColor: "#5fb3a9",
         backgroundColor: "rgba(95,179,169,0.1)",
         tension: 0.4,
@@ -127,26 +127,26 @@ export default function AdminDashboard() {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display:false }
+      legend: { display: false }
     }
   };
 
-  const StatCard = ({title,value,icon:Icon,trend,trendValue,color}:any)=>(
+  const StatCard = ({ title, value, icon: Icon, trend, trendValue, color }: any) => (
     <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg hover:shadow-xl transition border">
 
       <div className="flex justify-between items-start">
 
         <div className={`p-3 rounded-xl bg-gradient-to-br ${color}`}>
-          <Icon size={26} className="text-white"/>
+          <Icon size={26} className="text-white" />
         </div>
 
         {trend && (
           <div className={`flex items-center text-xs px-2 py-1 rounded-full
-          ${trend==="up" ? "bg-green-100 text-green-600":"bg-red-100 text-red-600"}`}>
+          ${trend === "up" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}>
 
-            {trend==="up"
-            ? <ArrowUpRight size={14}/>
-            : <ArrowDownRight size={14}/>}
+            {trend === "up"
+              ? <ArrowUpRight size={14} />
+              : <ArrowDownRight size={14} />}
 
             {trendValue}%
           </div>
@@ -161,8 +161,8 @@ export default function AdminDashboard() {
     </div>
   );
 
-  if(loading){
-    return(
+  if (loading) {
+    return (
       <div className="text-center py-40 text-gray-500">
         Loading dashboard...
       </div>
@@ -202,39 +202,39 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
         <StatCard
-        title="Products"
-        value={stats.products}
-        icon={Package}
-        trend="up"
-        trendValue="12"
-        color="from-blue-500 to-blue-600"
+          title="Products"
+          value={stats.products}
+          icon={Package}
+          trend="up"
+          trendValue="12"
+          color="from-blue-500 to-blue-600"
         />
 
         <StatCard
-        title="Inquiries"
-        value={stats.inquiries}
-        icon={MessageCircle}
-        trend="up"
-        trendValue="8"
-        color="from-green-500 to-green-600"
+          title="Inquiries"
+          value={stats.inquiries}
+          icon={MessageCircle}
+          trend="up"
+          trendValue="8"
+          color="from-green-500 to-green-600"
         />
 
         <StatCard
-        title="Contacts"
-        value={stats.contacts}
-        icon={Phone}
-        trend="down"
-        trendValue="3"
-        color="from-purple-500 to-purple-600"
+          title="Contacts"
+          value={stats.contacts}
+          icon={Phone}
+          trend="down"
+          trendValue="3"
+          color="from-purple-500 to-purple-600"
         />
 
         <StatCard
-        title="Visitors"
-        value={stats.visitors}
-        icon={Eye}
-        trend="up"
-        trendValue="24"
-        color="from-orange-500 to-orange-600"
+          title="Visitors"
+          value={stats.visitors}
+          icon={Eye}
+          trend="up"
+          trendValue="24"
+          color="from-orange-500 to-orange-600"
         />
 
       </div>
@@ -251,7 +251,7 @@ export default function AdminDashboard() {
           </h3>
 
           <div className="h-64">
-            <Bar data={barData} options={chartOptions}/>
+            <Bar data={barData} options={chartOptions} />
           </div>
 
         </div>
@@ -269,66 +269,68 @@ export default function AdminDashboard() {
 
         </div> */}
 
-      
 
 
-      {/* RECENT ACTIVITY */}
 
-      <div className="bg-white p-6 rounded-2xl shadow">
+        {/* RECENT ACTIVITY */}
 
-        <div className="flex justify-between mb-4">
+        <div className="bg-white p-6 rounded-2xl shadow">
 
-          <h3 className="text-lg font-semibold">
-            Recent Activity
-          </h3>
+          <div className="flex justify-between mb-4">
 
-          
+            <h3 className="text-lg font-semibold">
+              Recent Activity
+            </h3>
 
-        </div>
 
-        <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
 
-          {activities.map((item:any)=>{
+          </div>
 
-            const Icon =
-              item.type==="product" ? Package :
-              item.type==="inquiry" ? MessageCircle :
-              item.type==="appointment" ? Calendar :
-              Users;
+          <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
 
-            return(
+            {activities.map((item: any) => {
 
-              <div key={item.id} className="flex gap-4 items-center">
+              const Icon =
+                item.type === "product" ? Package :
+                  item.type === "inquiry" ? MessageCircle :
+                    item.type === "appointment" ? Calendar :
+                      Users;
 
-                <div className="p-2 bg-gray-100 rounded-lg">
-                  <Icon size={18}/>
+              return (
+
+                <div key={item.id} className="flex gap-4 items-center">
+
+                  <div className="p-2 bg-gray-100 rounded-lg">
+                    <Icon size={18} />
+                  </div>
+
+                  <div className="flex-1">
+                    <p className="text-gray-800">
+                      {item.action}
+                    </p>
+
+                    <p className="text-xs text-gray-400">
+                      {item.time}
+                    </p>
+                  </div>
+
+                  <MoreHorizontal size={18} />
+
                 </div>
 
-                <div className="flex-1">
-                  <p className="text-gray-800">
-                    {item.action}
-                  </p>
+              )
 
-                  <p className="text-xs text-gray-400">
-                    {item.time}
-                  </p>
-                </div>
+            })}
 
-                <MoreHorizontal size={18}/>
-
-              </div>
-
-            )
-
-          })}
+          </div>
 
         </div>
 
       </div>
-
-    </div>
     </div>
 
   );
 
 }
+
+

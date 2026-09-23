@@ -131,9 +131,8 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-           className={`w-full py-3 px-4 bg-gradient-to-r from-slate-900 to-teal-600 text-white font-semibold rounded-lg shadow-md hover:from-slate-800 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all ${
-              loading ? "opacity-75 cursor-not-allowed" : ""
-            }`}
+            className={`w-full py-3 px-4 bg-gradient-to-r from-slate-900 to-teal-600 text-white font-semibold rounded-lg shadow-md hover:from-slate-800 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all ${loading ? "opacity-75 cursor-not-allowed" : ""
+              }`}
           >
             {loading ? (
               <span className="flex items-center justify-center">
@@ -150,9 +149,9 @@ export default function LoginPage() {
 
           {/* Sign Up Link */}
           <p className="text-center text-sm text-gray-600">
-            Don't have an account?{" "}
+            {/* Don't have an account?{" "} */}
             <Link href="/signup" className="text-blue-600 hover:text-blue-800 font-semibold hover:underline">
-              Sign up here
+              {/* Sign up here */}
             </Link>
           </p>
         </form>

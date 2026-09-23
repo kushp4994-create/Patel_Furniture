@@ -1,72 +1,600 @@
-"use client"
+// "use client"
 
-import { useState } from "react"
+// import { useState } from "react"
 
-export default function InquiryForm({ productId }: any) {
+// export default function InquiryForm({ productId }: any) {
 
-  const [open,setOpen] = useState(false)
+//   const [open,setOpen] = useState(false)
 
-  async function handleSubmit(e:any){
-    e.preventDefault()
+//   async function handleSubmit(e:any){
+//     e.preventDefault()
 
-    const form = new FormData(e.target)
+//     const form = new FormData(e.target)
 
-    await fetch("/api/inquiries",{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({
-        name:form.get("name"),
-        email:form.get("email"),
-        message:form.get("message"),
-        productId
-      })
-    })
+//     await fetch("/api/inquiries",{
+//       method:"POST",
+//       headers:{ "Content-Type":"application/json" },
+//       body:JSON.stringify({
+//         name:form.get("name"),
+//         email:form.get("email"),
+//         message:form.get("message"),
+//         productId
+//       })
+//     })
 
-    alert("Inquiry Sent")
-  }
+//     alert("Inquiry Sent")
+//   }
 
-  return(
+//   return(
 
-    <div>
+//     <div>
 
+//       <button
+//         onClick={()=>setOpen(!open)}
+//         className="bg-green-600 text-white px-6 py-2 rounded"
+//       >
+//         Inquiry
+//       </button>
+
+//       {open && (
+
+//         <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+
+//           <input
+//             name="name"
+//             placeholder="Name"
+//             className="border p-2 w-full"
+//           />
+
+//           <input
+//             name="email"
+//             placeholder="Email"
+//             className="border p-2 w-full"
+//           />
+
+//           <textarea
+//             name="message"
+//             placeholder="Message"
+//             className="border p-2 w-full"
+//           />
+
+//           <button className="bg-black text-white px-4 py-2">
+//             Submit
+//           </button>
+
+//         </form>
+
+//       )}
+
+//     </div>
+
+//   )
+// }
+
+
+
+"use client";
+
+import {
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
+
+interface InquiryFormProps {
+  productId: string;
+}
+
+interface InquiryFormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  message?: string;
+}
+
+interface ApiErrorResponse {
+  message?: string;
+  error?: string;
+}
+
+const MIN_MESSAGE_LENGTH = 10;
+const MAX_MESSAGE_LENGTH = 1000;
+
+export default function InquiryForm({
+  productId,
+}: InquiryFormProps) {
+  const [open, setOpen] = useState(false);
+
+  const [form, setForm] = useState<InquiryFormData>({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [successMessage, setSuccessMessage] = useState("");
+  const [apiError, setApiError] = useState("");
+
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  const handleToggle = () => {
+    setOpen((previous) => !previous);
+
+    if (!open) {
+      setTimeout(() => {
+        nameInputRef.current?.focus();
+      }, 100);
+    }
+  };
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+
+    if (errors[name as keyof FormErrors]) {
+      setErrors((previous) => ({
+        ...previous,
+        [name]: undefined,
+      }));
+    }
+
+    if (apiError) {
+      setApiError("");
+    }
+
+    if (successMessage) {
+      setSuccessMessage("");
+    }
+  };
+
+  const validateForm = (): FormErrors => {
+    const newErrors: FormErrors = {};
+
+    const name = form.name.trim();
+    const email = form.email.trim();
+    const message = form.message.trim();
+
+    if (!name) {
+      newErrors.name = "Please enter your name.";
+    } else if (name.length < 2) {
+      newErrors.name = "Name must be at least 2 characters.";
+    } else if (name.length > 100) {
+      newErrors.name = "Name must be less than 100 characters.";
+    }
+
+    if (!email) {
+      newErrors.email = "Please enter your email address.";
+    } else if (
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
+      newErrors.email = "Please enter a valid email address.";
+    }
+
+    if (!message) {
+      newErrors.message = "Please enter your inquiry.";
+    } else if (message.length < MIN_MESSAGE_LENGTH) {
+      newErrors.message = `Message must be at least ${MIN_MESSAGE_LENGTH} characters.`;
+    } else if (message.length > MAX_MESSAGE_LENGTH) {
+      newErrors.message = `Message cannot exceed ${MAX_MESSAGE_LENGTH} characters.`;
+    }
+
+    return newErrors;
+  };
+
+  const handleSubmit = async (
+    e: FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
+    setSuccessMessage("");
+    setApiError("");
+
+    const validationErrors = validateForm();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+
+      if (validationErrors.name) {
+        nameInputRef.current?.focus();
+      }
+
+      return;
+    }
+
+    if (!productId.trim()) {
+      setApiError(
+        "Unable to send inquiry because the product information is missing."
+      );
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setErrors({});
+
+      const response = await fetch("/api/inquiries", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          message: form.message.trim(),
+          productId,
+        }),
+      });
+
+      let responseData: ApiErrorResponse | null = null;
+
+      try {
+        responseData = await response.json();
+      } catch {
+        responseData = null;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          responseData?.message ||
+          responseData?.error ||
+          "Unable to send inquiry. Please try again."
+        );
+      }
+
+      setForm({
+        name: "",
+        email: "",
+        message: "",
+      });
+
+      setSuccessMessage(
+        "Your inquiry has been sent successfully. We'll get back to you soon."
+      );
+    } catch (error) {
+      console.error("Inquiry submission error:", error);
+
+      setApiError(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const messageLength = form.message.length;
+
+  return (
+    <div className="w-full">
+      {/* Main Inquiry Button */}
       <button
-        onClick={()=>setOpen(!open)}
-        className="bg-green-600 text-white px-6 py-2 rounded"
+        type="button"
+        onClick={handleToggle}
+        aria-expanded={open}
+        aria-controls="product-inquiry-panel"
+        className={`group inline-flex w-full items-center justify-center gap-2.5 rounded-xl px-6 py-3.5 text-sm font-bold shadow-sm transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-[#5fb3a9]/20 sm:w-auto ${open
+          ? "bg-[#4fa69c] text-white shadow-md"
+          : "bg-[#5fb3a9] text-white hover:bg-[#4fa69c] hover:shadow-md"
+          }`}
       >
-        Inquiry
+        <span
+          className={`flex h-5 w-5 items-center justify-center rounded-full border border-white/40 text-xs transition-transform duration-200 ${open ? "rotate-45" : ""
+            }`}
+        >
+          +
+        </span>
+
+        {open ? "Close Inquiry" : "Make an Inquiry"}
       </button>
 
+      {/* Inquiry Panel */}
       {open && (
+        <section
+          id="product-inquiry-panel"
+          aria-labelledby="inquiry-form-title"
+          className="mt-5 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg shadow-gray-200/40"
+        >
+          {/* Header */}
+          <div className="border-b border-gray-100 bg-gradient-to-r from-[#f7fcfb] to-white px-5 py-6 sm:px-7">
+            <div className="flex items-start gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#5fb3a9]/10 text-lg text-[#4b9d94]">
+                ✉
+              </div>
 
-        <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#4b9d94]">
+                  Contact Us
+                </p>
 
-          <input
-            name="name"
-            placeholder="Name"
-            className="border p-2 w-full"
-          />
+                <h2
+                  id="inquiry-form-title"
+                  className="mt-1 text-xl font-bold tracking-tight text-gray-900"
+                >
+                  Product Inquiry
+                </h2>
 
-          <input
-            name="email"
-            placeholder="Email"
-            className="border p-2 w-full"
-          />
+                <p className="mt-1.5 text-sm leading-6 text-gray-500">
+                  Have a question about this product? Send us a
+                  message and we'll be happy to help.
+                </p>
+              </div>
+            </div>
+          </div>
 
-          <textarea
-            name="message"
-            placeholder="Message"
-            className="border p-2 w-full"
-          />
+          {/* Form */}
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="p-5 sm:p-7"
+          >
+            {/* API Error */}
+            {apiError && (
+              <div
+                role="alert"
+                aria-live="assertive"
+                className="mb-5 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4"
+              >
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-100 font-bold text-red-600">
+                  !
+                </div>
 
-          <button className="bg-black text-white px-4 py-2">
-            Submit
-          </button>
+                <div>
+                  <p className="text-sm font-semibold text-red-800">
+                    Unable to send inquiry
+                  </p>
 
-        </form>
+                  <p className="mt-1 text-sm leading-5 text-red-700">
+                    {apiError}
+                  </p>
+                </div>
+              </div>
+            )}
 
+            {/* Success */}
+            {successMessage && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="mb-5 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4"
+              >
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 font-bold text-emerald-600">
+                  ✓
+                </div>
+
+                <div>
+                  <p className="text-sm font-semibold text-emerald-800">
+                    Inquiry Sent Successfully
+                  </p>
+
+                  <p className="mt-1 text-sm leading-5 text-emerald-700">
+                    {successMessage}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-5">
+              {/* Name */}
+              <div>
+                <label
+                  htmlFor="inquiry-name"
+                  className="mb-2 block text-sm font-semibold text-gray-700"
+                >
+                  Full Name
+                  <span className="ml-1 text-red-500">*</span>
+                </label>
+
+                <div className="relative">
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  >
+                    👤
+                  </span>
+
+                  <input
+                    ref={nameInputRef}
+                    id="inquiry-name"
+                    name="name"
+                    type="text"
+                    value={form.name}
+                    onChange={handleChange}
+                    placeholder="Enter your full name"
+                    autoComplete="name"
+                    disabled={isSubmitting}
+                    aria-invalid={Boolean(errors.name)}
+                    aria-describedby={
+                      errors.name
+                        ? "inquiry-name-error"
+                        : undefined
+                    }
+                    className={`w-full rounded-xl border bg-white py-3.5 pl-11 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 hover:border-gray-400 focus:ring-4 disabled:cursor-not-allowed disabled:bg-gray-50 ${errors.name
+                      ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
+                      : "border-gray-200 focus:border-[#5fb3a9] focus:ring-[#5fb3a9]/10"
+                      }`}
+                  />
+                </div>
+
+                {errors.name && (
+                  <p
+                    id="inquiry-name-error"
+                    className="mt-2 text-xs font-medium text-red-600"
+                  >
+                    {errors.name}
+                  </p>
+                )}
+              </div>
+
+              {/* Email */}
+              <div>
+                <label
+                  htmlFor="inquiry-email"
+                  className="mb-2 block text-sm font-semibold text-gray-700"
+                >
+                  Email Address
+                  <span className="ml-1 text-red-500">*</span>
+                </label>
+
+                <div className="relative">
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  >
+                    ✉
+                  </span>
+
+                  <input
+                    id="inquiry-email"
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                    disabled={isSubmitting}
+                    aria-invalid={Boolean(errors.email)}
+                    aria-describedby={
+                      errors.email
+                        ? "inquiry-email-error"
+                        : undefined
+                    }
+                    className={`w-full rounded-xl border bg-white py-3.5 pl-11 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 hover:border-gray-400 focus:ring-4 disabled:cursor-not-allowed disabled:bg-gray-50 ${errors.email
+                      ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
+                      : "border-gray-200 focus:border-[#5fb3a9] focus:ring-[#5fb3a9]/10"
+                      }`}
+                  />
+                </div>
+
+                {errors.email && (
+                  <p
+                    id="inquiry-email-error"
+                    className="mt-2 text-xs font-medium text-red-600"
+                  >
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+
+              {/* Message */}
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <label
+                    htmlFor="inquiry-message"
+                    className="block text-sm font-semibold text-gray-700"
+                  >
+                    Your Message
+                    <span className="ml-1 text-red-500">*</span>
+                  </label>
+
+                  <span
+                    className={`text-xs font-medium ${messageLength >= MIN_MESSAGE_LENGTH
+                      ? "text-emerald-600"
+                      : "text-gray-400"
+                      }`}
+                  >
+                    {messageLength}/{MAX_MESSAGE_LENGTH}
+                  </span>
+                </div>
+
+                <textarea
+                  id="inquiry-message"
+                  name="message"
+                  value={form.message}
+                  onChange={handleChange}
+                  placeholder="Tell us what you'd like to know about this product..."
+                  rows={5}
+                  maxLength={MAX_MESSAGE_LENGTH}
+                  disabled={isSubmitting}
+                  aria-invalid={Boolean(errors.message)}
+                  aria-describedby={
+                    errors.message
+                      ? "inquiry-message-error"
+                      : "inquiry-message-help"
+                  }
+                  className={`w-full resize-y rounded-xl border bg-white px-4 py-3.5 text-sm leading-6 text-gray-900 outline-none transition placeholder:text-gray-400 hover:border-gray-400 focus:ring-4 disabled:cursor-not-allowed disabled:bg-gray-50 ${errors.message
+                    ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
+                    : "border-gray-200 focus:border-[#5fb3a9] focus:ring-[#5fb3a9]/10"
+                    }`}
+                />
+
+                {errors.message ? (
+                  <p
+                    id="inquiry-message-error"
+                    className="mt-2 text-xs font-medium text-red-600"
+                  >
+                    {errors.message}
+                  </p>
+                ) : (
+                  <p
+                    id="inquiry-message-help"
+                    className="mt-2 text-xs text-gray-400"
+                  >
+                    Please provide at least {MIN_MESSAGE_LENGTH}{" "}
+                    characters.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="mt-7 border-t border-gray-100 pt-6">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="group inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#5fb3a9] px-6 py-3.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-[#4fa69c] hover:shadow-md active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-[#5fb3a9]/20 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-[180px]"
+              >
+                {isSubmitting ? (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+                    />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    Send Inquiry
+                    <span
+                      aria-hidden="true"
+                      className="transition-transform group-hover:translate-x-0.5"
+                    >
+                      →
+                    </span>
+                  </>
+                )}
+              </button>
+
+              <div className="mt-4 flex items-start gap-2 text-xs leading-5 text-gray-400">
+                <span aria-hidden="true">🔒</span>
+
+                <p>
+                  We'll only use your information to respond to
+                  this inquiry.
+                </p>
+              </div>
+            </div>
+          </form>
+        </section>
       )}
-
     </div>
-
-  )
+  );
 }
